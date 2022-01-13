@@ -1,0 +1,82 @@
+Sửa tất cả:
+<?php echo base_url() ?>admin/useradmin
+thành:
+admin/useradmin
+
+Sửa tất cả:
+<?php echo base_url() ?>admin/category
+thành:
+admin/category
+
+Trong application/models/backend/Mcategory.php dòng 68
+return $row['name']; => return isSet($row['name'])?$row['name']:null;
+
+Trong .\application\views\frontend\components\giohang\info-order.php
+----
+Sửa dòng 32:
+<input type="text" class="form-control" placeholder="Họ và tên" name="name" value="<?php echo $user['fullname'] ?>" <?php if($this->session->userdata('sessionKhachHang')) echo'readonly'?>>
+thành:
+<input type="text" class="form-control" placeholder="Họ và tên" name="name" value="<?php echo isSet($user['fullname'])?$user['fullname']:''; ?>" <?php if($this->session->userdata('sessionKhachHang')) echo'readonly'?>>
+----
+Sửa dòng 39:
+<input type="text" class="form-control" name="<?php if($this->session->userdata('sessionKhachHang')) echo 'tv'; else echo 'email'?>" value="<?php echo $user['email'] ?>" placeholder="Email" <?php if($this->session->userdata('sessionKhachHang')) echo'readonly'?>>
+thành:
+<input type="text" class="form-control" name="<?php if($this->session->userdata('sessionKhachHang')) echo 'tv'; else echo 'email'?>" value="<?php echo isSet($user['email'])?$user['email']:''; ?>" placeholder="Email" <?php if($this->session->userdata('sessionKhachHang')) echo'readonly'?>>
+----
+Sửa dòng 47:
+<input type="text"  class="form-control" placeholder="Số điện thoại" name="phone" value="<?php echo $user['phone'] ?>" <?php if($this->session->userdata('sessionKhachHang')) echo'readonly'?>>
+thành:
+<input type="text"  class="form-control" placeholder="Số điện thoại" name="phone" value="<?php echo isSet($user['phone'])?$user['phone']:''; ?>" <?php if($this->session->userdata('sessionKhachHang')) echo'readonly'?>>
+---
+Sửa dòng 76:
+<textarea name="address" placeholder="Địa chỉ giao hàng:" class="form-control" rows="4" ="" style="height: auto !important;" value="<?php echo $user['address'] ?>"></textarea>
+thành:
+<textarea name="address" placeholder="Địa chỉ giao hàng:" class="form-control" rows="4" ="" style="height: auto !important;" value="<?php echo isSet($user['address'])?$user['address']:''; ?>"></textarea>
+
+
+
+--Nhựt sửa 30/06/2021
++Sửa dòng 101, 73
+<?php echo base_url() ?>admin/product/update
+thành:
+admin/product/update
+
++Trong insert.php(dòng 11) có thêm cái 
+<?php echo base_url()?>admin/producer
+--lí do: vì bỏ đi echo base_url()... sau khi thêm sản phẩm nó không chịu về trang product nên giữ nguyên cái đó
++sửa này dòng 2 trong jcarousel.php
+<!-- //FlexSlider-->
+Thành
+//<!-- //FlexSlider-->
++Sửa dòng 69 trong slides/index.php
+<a class="btn btn-success btn-xs" href="<?php echo base_url() ?>admin/sliders/update/'.$row['id'].'" role = "button">
+thành 
+<a class="btn btn-success btn-xs" admin/sliders/update/'.$row['id'].'" role = "button">
+
+Trong  application/controllers/admin/Product.php
+Sửa function ở 216
+       public function delete($id){
+         $this->load->helper('file');
+         $row = $this->Mproduct->product_delete_detail($id);
+         delete_files(base_url("public/images/products" . $row['img']));
+         $this->Mproduct->product_delete($id);
+         $this->session->set_flashdata('success', 'Xóa sản phẩm thành công');
+         redirect('admin/product/recyclebin','refresh');
+       }
+thành
+       public function delete($id){
+         $this->load->helper('file');
+         $row = $this->Mproduct->product_detail($id);
+         unlink(FCPATH . "public/images/products/" . $row['avatar']);
+         unlink(FCPATH . "public/images/products/" . $row['img']);
+         $this->Mproduct->product_delete($id);
+         $this->session->set_flashdata('success', 'Xóa sản phẩm thành công');
+         redirect('admin/product/recyclebin','refresh');
+       }
+
+
+Trong  application/models/backend/Mproduct.php
+Sửa dòng 28:
+        $this->db->where('trash', 1);
+Thành:
+        // $this->db->where('trash', 1);
